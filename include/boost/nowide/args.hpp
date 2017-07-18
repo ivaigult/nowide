@@ -9,6 +9,7 @@
 #define BOOST_NOWIDE_ARGS_HPP_INCLUDED
 
 #include <boost/config.hpp>
+#include <boost/detail/no_exceptions_support.hpp>
 #include <boost/nowide/stackstring.hpp>
 #include <vector>
 #ifdef BOOST_WINDOWS
@@ -92,7 +93,7 @@ namespace nowide {
                 argv = &dummy;
                 return;
             }
-            try{ 
+            BOOST_TRY {
                 args_.resize(wargc+1,0);
                 arg_values_.resize(wargc);
                 for(int i=0;i<wargc;i++) {
@@ -105,10 +106,11 @@ namespace nowide {
                 argc = wargc;
                 argv = &args_[0];
             }
-            catch(...) {
+            BOOST_CATCH(...) {
                 LocalFree(wargv);
-                throw;
+                BOOST_RETHROW;
             }
+            BOOST_CATCH_END
             LocalFree(wargv);
         }
         void fix_env(char **&en)
@@ -118,7 +120,7 @@ namespace nowide {
             wchar_t *wstrings = GetEnvironmentStringsW();
             if(!wstrings)
                 return;
-            try {
+            BOOST_TRY {
                 wchar_t *wstrings_end = 0;
                 int count = 0;
                 for(wstrings_end = wstrings;*wstrings_end;wstrings_end+=wcslen(wstrings_end)+1)
@@ -135,10 +137,11 @@ namespace nowide {
                     en = &envp_[0];
                 }
             }
-            catch(...) {
+            BOOST_CATCH(...) {
                 FreeEnvironmentStringsW(wstrings);
-                throw;
+                BOOST_RETHROW;
             }
+            BOOST_CATCH_END
             FreeEnvironmentStringsW(wstrings);
 
         }

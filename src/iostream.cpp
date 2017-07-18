@@ -6,6 +6,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 //
 #define BOOST_NOWIDE_SOURCE
+#include <boost/detail/no_exceptions_support.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <boost/nowide/convert.hpp>
 #include <stdio.h>
@@ -213,10 +214,11 @@ namespace details {
     }
     winconsole_ostream::~winconsole_ostream()
     {
-		try {
+		BOOST_TRY {
 			flush();
 		}
-		catch(...){}
+		BOOST_CATCH(...){}
+        BOOST_CATCH_END
     }
 
     winconsole_istream::winconsole_istream() : std::istream(0)
