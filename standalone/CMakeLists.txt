@@ -4,6 +4,7 @@ include_directories(.)
 enable_testing()
 
 option(RUN_WITH_WINE		"Use wine to run tests" OFF)
+option(NO_EXCEPTIONS_AND_RTTI   "Disable exceptions and RTTI" OFF)
 
 
 if(NOT LIBDIR)
@@ -29,6 +30,16 @@ endif()
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_FLAGS}")
+
+if(NO_EXCEPTIONS_AND_RTTI)
+    if(MSVC)
+        string(REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+        string(REGEX REPLACE "/EH[a-z]+" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_HAS_EXCEPTIONS=0")
+    else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions")
+    endif()
+endif()
 
 set(NOWIDE_TESTS
     test_convert
